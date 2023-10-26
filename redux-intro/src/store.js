@@ -1,46 +1,59 @@
 import { createStore, combineReducers } from "redux";
+
 const initialStateAccount = {
   balance: 0,
   loan: 0,
   loanPurpose: "",
 };
 
-const accountReducer = (state = initialStateAccount, action) => {
-  if (action.type === "account/deposit") {
-    return { ...state, balance: state.balance + action.payload };
-  }
+const initialStateCustomer = {
+  FullName: "",
+  nationalID: "",
+  createdAt: "",
+};
 
-  if (action.type === "account/withdraw") {
-    return { ...state, balance: state.balance - action.payload };
-  }
+const customerReducer = (state1 = initialStateCustomer, action) => {
+  switch (action.type) {
+    case "customer/createCustomer":
+      return {
+        ...state1,
+        FullName: action.payload.FullName,
+        nationalID: action.payload.nationalID,
+        createdAt: action.payload.createdAt,
+      };
 
-  if (action.type === "account/requestLoan") {
-    return {
-      ...state,
-      loan: action.payload.loan,
-      loanPurpose: action.payload.loanPurpose,
-      balance: state.balance + action.payload.loan,
-    };
-  }
-  if (action.type === "account/payLoan") {
-    return {
-      ...state,
-      balance: state.balance - state.loan,
-      loan: 0,
-      loanPurpose: action.payload.loanPurpose,
-    };
-  }
-  if (action.type === "") {
-    return state;
+    case "customer/updateName":
+      return { ...state1, FullName: action.payload };
+    default:
+      return state1;
   }
 };
-// store.dispatch({ type: "account/deposit", payload: 500 });
-// console.log("hey jackpot");
 
-// store.dispatch({
-//   type: "account/requestLoan",
-//   payload: { loan: 200, loanPurpose: "school" },
-// });
+const accountReducer = (state = initialStateAccount, action) => {
+  switch (action.type) {
+    case "account/deposit":
+      return { ...state, balance: state.balance + action.payload };
+    case "account/withdraw":
+      return { ...state, balance: state.balance - action.payload };
+    case "account/requestLoan":
+      return {
+        ...state,
+        loan: action.payload.loan,
+        loanPurpose: action.payload.loanPurpose,
+        balance: state.balance + action.payload.loan,
+      };
+    case "account/payLoan":
+      return {
+        ...state,
+        balance: state.balance - state.loan,
+        loan: 0,
+        loanPurpose: action.payload.loanPurpose,
+      };
+
+    default:
+      return state;
+  }
+};
 
 function deposit(amount) {
   return { type: "account/deposit", payload: amount };
@@ -60,54 +73,28 @@ function payloan() {
   return { type: "account/payLoan", payload: { loan: 0, loanPurpose: "" } };
 }
 
-// store.dispatch(deposit(500));
-// store.dispatch(withdraw(200));
-// store.dispatch(requestloan(1000, "buy school clothes"));
-// store.dispatch(payloan());
-
-const initialStateCustomer = {
-  fullname: "",
-  nationalID: "",
-  createdAt: "",
-};
-
-const customerReducer = (state = initialStateCustomer, action) => {
-  if (action.type === "account/createcustomer") {
-    return {
-      ...state,
-      fullname: action.payload.fullname,
-      nationalID: action.payload.nationalID,
-      createdAt: action.payload.createdAt,
-    };
-  }
-  if (action.type === "account/updateName") {
-    return { ...state, fullname: action.payload };
-  }
-  if (action.type === "") {
-    return state;
-  }
-};
-
-const createCustomer = (fullname, nationalID) => {
+const createCustomer = (name, nationalID) => {
   return {
-    type: "account/createCustomer",
+    type: "customer/createCustomer",
     payload: {
-      fullname,
-      nationalID,
-      createdAt: new Date().toDateString(),
+      FullName: name,
+      nationalID: nationalID,
+      createdAt: new Date().toISOString(),
     },
   };
 };
 
+const updateFullName = (name) => {
+  return { type: "customer/update", payload: name };
+};
+
 const rootReducer = combineReducers({
-  a: accountReducer,
-  b: customerReducer,
+  account: accountReducer,
+  customer: customerReducer,
 });
 
 const store = createStore(rootReducer);
 
-console.log(store);
-
-const updateFullName = (fullname) => {
-  return { type: "account/update", payload: fullname };
-};
+store.dispatch(createCustomer("Erick Elnino", "564485"));
+store.dispatch(deposit(200));
+console.log(store.getState());
