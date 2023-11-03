@@ -1,23 +1,13 @@
-import { createStore, combineReducers } from "redux";
+import { createStore, combineReducers, applyMiddleware } from "redux";
 import { customerReducer } from "./Features/Customers/CustomerSlice";
 import { accountReducer } from "./Features/Accounts/AccountSlice";
-import {
-  deposit,
-  withdraw,
-  payloan,
-  requestloan,
-} from "./Features/Accounts/AccountSlice";
-
-import {
-  createCustomer,
-  updateFullName,
-} from "./Features/Customers/CustomerSlice";
+import thunk from "redux-thunk";
 
 const rootReducer = combineReducers({
   account: accountReducer,
   customer: customerReducer,
 });
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export default store;

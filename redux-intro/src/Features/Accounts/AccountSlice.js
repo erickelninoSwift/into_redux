@@ -32,8 +32,21 @@ export const accountReducer = (state = initialStateAccount, action) => {
   }
 };
 
-export function deposit(amount) {
-  return { type: "account/deposit", payload: amount };
+export function deposit(amount, currency) {
+  if (currency === "USD") return { type: "account/deposit", payload: amount };
+
+  return async function (dispatch, getState) {
+    // API call
+    const response = await fetch(
+      `https://api.frankfurter.app/latest?amount=${amount}&from=${currency}&to=USD`
+    );
+    const data = await response.json();
+    const convertedData = data.rates.USD;
+    console.log(convertedData);
+    dispatch({ type: "account/deposit", payload: convertedData });
+
+    // return Action
+  };
 }
 
 export function withdraw(amount) {
