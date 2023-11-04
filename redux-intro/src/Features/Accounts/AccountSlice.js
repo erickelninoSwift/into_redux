@@ -1,5 +1,3 @@
-import { useSelector } from "react-redux";
-import { createStore } from "redux";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialStateAccount = {
@@ -12,7 +10,7 @@ const initialStateAccount = {
 const accountSlice = createSlice({
   name: "account",
   initialState: initialStateAccount,
-  reducers: {
+  reducer: {
     deposit(state, action) {
       state.balance = state.balance + action.payload;
       state.isLoading = false;
@@ -23,20 +21,21 @@ const accountSlice = createSlice({
           ? state.balance - action.payload
           : state.balance;
     },
-    reuestLoan(state, action) {
+    requestloan(state, action) {
       if (state.loan > 0) return;
       state.loan = state.loan + action.payload;
       state.loanPurpose = action.payload.loanPurpose;
       state.balance = state.balance + state.loan;
     },
-    payLoan(state, action) {
+    payloan(state, action) {
       state.balance = state.balance - state.loan;
       state.loan = 0;
       state.loanPurpose = "";
     },
   },
 });
-
+export const { deposit, withdraw, requestloan, payloan } = accountSlice.actions;
+export default accountSlice.reducer;
 console.log(accountSlice);
 // export const accountReducer = (state = initialStateAccount, action) => {
 //   switch (action.type) {
